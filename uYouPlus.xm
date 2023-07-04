@@ -154,6 +154,34 @@ static BOOL oldDarkTheme() {
 }
 %end
 
+// Reposition "Create" Tab to the Center in the Pivot Bar - qnblackcat/uYouPlus#107
+static void repositionCreateTab(YTIGuideResponse *response) {
+    NSMutableArray<YTIGuideResponseSupportedRenderers *> *renderers = [response itemsArray];
+    for (YTIGuideResponseSupportedRenderers *guideRenderers in renderers) {
+        YTIPivotBarRenderer *pivotBarRenderer = [guideRenderers pivotBarRenderer];
+        NSMutableArray<YTIPivotBarSupportedRenderers *> *items = [pivotBarRenderer itemsArray];
+        NSUInteger createIndex = [items indexOfObjectPassingTest:^BOOL(YTIPivotBarSupportedRenderers *renderers, NSUInteger idx, BOOL *stop) {
+            return [[[renderers pivotBarItemRenderer] pivotIdentifier] isEqualToString:@"FEuploads"];
+        }];
+        if (createIndex != NSNotFound) {
+            YTIPivotBarSupportedRenderers *createTab = [items objectAtIndex:createIndex];
+            [items removeObjectAtIndex:createIndex];
+            NSUInteger centerIndex = items.count / 2;
+            [items insertObject:createTab atIndex:centerIndex]; // Reposition the "Create" tab at the center
+        }
+    }
+}
+%hook YTGuideServiceCoordinator
+- (void)handleResponse:(YTIGuideResponse *)response withCompletion:(id)completion {
+    repositionCreateTab(response);
+    %orig(response, completion);
+}
+- (void)handleResponse:(YTIGuideResponse *)response error:(id)error completion:(id)completion {
+    repositionCreateTab(response);
+    %orig(response, error, completion);
+}
+%end
+
 # pragma mark - Tweaks
 // IAmYouTube - https://github.com/PoomSmart/IAmYouTube/
 %hook YTVersionUtils
