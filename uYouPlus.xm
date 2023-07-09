@@ -329,7 +329,7 @@ BOOL isAd(id node) {
 }
 %end
 
-%hook YTIMediaQualitySettingsHotConfig (only works for YouTube 18.19.1-latest)
+%hook YTIMediaQualitySettingsHotConfig // (only works for YouTube 18.19.1-latest)
 %new(B@:) - (BOOL)enableQuickMenuVideoQualitySettings { return NO; }
 %end // YTClassicVideoQuality
 
