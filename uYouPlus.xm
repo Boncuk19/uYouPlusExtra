@@ -322,16 +322,18 @@ BOOL isAd(id node) {
 // %end
 
 // YTClassicVideoQuality: https://github.com/PoomSmart/YTClassicVideoQuality
-%hook YTVideoQualitySwitchControllerFactory // Deprecated (only works for YouTube 16.xx.x-18.18.2)
-- (id)videoQualitySwitchControllerWithParentResponder:(id)responder {
-    Class originalClass = %c(YTVideoQualitySwitchOriginalController);
-    return originalClass ? [[originalClass alloc] initWithParentResponder:responder] : %orig;
-}
+%hook YTIMediaQualitySettingsHotConfig // (works for YouTube 18.19.1-latest)
+
+%new(B@:) - (BOOL)enableQuickMenuVideoQualitySettings { return NO; }
+
 %end
 
-%hook YTIMediaQualitySettingsHotConfig // (only works for YouTube 18.19.1-latest)
-%new(B@:) - (BOOL)enableQuickMenuVideoQualitySettings { return NO; }
-%end // YTClassicVideoQuality
+// %hook YTVideoQualitySwitchControllerFactory
+// - (id)videoQualitySwitchControllerWithParentResponder:(id)responder {
+//     Class originalClass = %c(YTVideoQualitySwitchOriginalController);
+//     return originalClass ? [[originalClass alloc] initWithParentResponder:responder] : %orig;
+// }
+// %end
 
 // A/B flags
 %hook YTColdConfig 
